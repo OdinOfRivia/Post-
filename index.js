@@ -2,7 +2,7 @@ const listElement = document.querySelector(".posts");
 const fetchButton = document.querySelector("#available-posts button");
 const postTemplate = document.querySelector("template");
 
-const myForm = document.getElementById("my-form");
+const addButton = document.querySelector("#add-button");
 
 //here we would like to wait for the fetch untill the button is pressed
 // so we add a "await" keyword to the funtion, however we also need to wrap it
@@ -93,63 +93,30 @@ async function fetchPosts() {
   }
 }
 
-async function addPost() {
-  preventDefault();
-  // const sendData = await sendHttpRequest(
-  //   "POST",
-  //   "https://jsonplaceholder.typicode.com/posts"
-  // )
-
-  // const formData = new FormData();
-  // formData.append("title", document.getElementById("title").value);
-  // formData.append("body", document.getElementById("content").value);
-  
-  // const data = {
-  //   title: formData.get("title"),
-  //   body: formData.get("body"),
-  // }
-
-  
-  // fetch("https://jsonplaceholder.typicode.com/posts", {
-  //   method: "POST",
-  //   headers: {
-  //     'Content-type': 'application/json; charset=UTF-8',
-  //   },
-  //   body: JSON.stringify(data),
-  // })
-  // .then(response => {
-  //   if (response.ok) {
-  //     // handle success
-  //     console.log('Data posted successfully');
-  //   } else {
-  //     // handle errors
-  //     console.error('Failed to post data');
-  //   }
-  // })
-  // .catch(error => {
-  //   console.error(error);
-  // });
-
-
+async function postData(event){
+  event.preventDefault();
   const newPost = {
-    title: 'All about Fetch!',
-    body: 'Fetch is awesome!'
- }
- const options = {
+    title: document.getElementById('title').value,
+    body: document.getElementById('content').value
+  }
+
+  const options = {
     method: 'POST',
     body: JSON.stringify(newPost),
     headers: new Headers({
         'Content-Type': 'application/json'
     })
- }
- fetch("https://jsonplaceholder.typicode.com/posts", options)
-    .then(res => res.json())
-    .then(posts => console.log(posts))
+  }
 
-  
+  const response = await fetch("https://jsonplaceholder.typicode.com/posts", options);
+  const data = await response.json();  
+  const postElClone = document.importNode(postTemplate.content, true);
+  postElClone.querySelector("h2").textContent = data.title;
+  postElClone.querySelector("p").textContent = data.body;
+  postElClone.querySelector("li").id = data.id;
+  listElement.appendChild(postElClone);
 }
 
-//READ/GET
 
 fetchButton.addEventListener("click", fetchPosts);
-myForm.addEventListener("submit", addPost);
+addButton.addEventListener("click", postData);
